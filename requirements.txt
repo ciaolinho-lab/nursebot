@@ -1,0 +1,8 @@
+# NurseBot 護理智慧助手 — Python 依賴套件
+# pip install -r requirements.txt
+
+flask==3.1.*
+line-bot-sdk==3.*
+python-dotenv==1.*
+requests==2.*
+gunicorn==23.*

@@ -1,0 +1,206 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>
+	藥品資料查詢
+</title><link rel="Stylesheet" type="text/css" href="css/style.css" />
+    <script language="javascript" type="text/javascript" src="scripts/Common.js"></script>
+    <script language="javascript" type="text/javascript">
+        // 這一段是偵測按下 Backspace 時可以達到按下頁面上「回上一頁」的效果
+        var returnBtnId = "";
+        document.onkeydown = function () {
+            if (event.keyCode == 8) {
+                if (document.getElementById(returnBtnId) != null) {
+                    document.getElementById(returnBtnId).click();
+                    return false;
+                }
+            }
+        }
+        function SetOldPackageVisible(photoBoxId, rowId) {
+            var counterId = "imageErrorCount_" + photoBoxId;
+            eval('var counter = ' + counterId); // eval包起來的文字會被當成實際的程式碼執行 (超好用!)，所以會得到 counter 這個變數
+            if (counter >= 4) {
+                document.getElementById(rowId).style.display = 'none';
+            }
+        }
+    </script>
+    <meta http-equiv="Page-Enter" content="blendTrans(duration=0.1)" /><meta http-equiv="Page-Exit" content="blendTrans(duration=0.1)" /><link href=" https://www.ntuh.gov.tw/information/_catalogs/masterpage/css/handicap_free.css" type="text/css" rel="stylesheet" /></head>
+<body oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
+    <form name="form1" method="post" action="./QueryDrug.aspx" id="form1">
+<div>
+<input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="" />
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJODE1ODE4Njg0D2QWAgIDD2QWAgIDD2QWAmYPZBYEAgEPDxYEHihEcnVnSW5mb0NvbnRyb2wvRHJ1Z0luZm9RdWVyeS9Db2x1bW5UeXBlCymkAVBoYXJtYWN5V2ViQXBwbGljYXRpb25fV1dXLkNvbW1vbk1ldGhvZC5EcnVnRm9ybXVsYXJ5LkRydWdJbmZvK0RydWdMaXN0Q29sdW1uVHlwZSwgUGhhcm1hY3lXZWJBcHBsaWNhdGlvbl9XV1csIFZlcnNpb249MS4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1udWxsAB42RHJ1Z0luZm9Db250cm9sL0RydWdJbmZvUXVlcnkvTGF0ZXN0Q2xpY2tRdWVyeUJ1dHRvbklEBRJidG5RdWVyeUJ5RHJ1Z05hbWVkFgYCAQ8PFgQeBFRleHRlHgdWaXNpYmxlaGRkAgUPZBYKAgEPZBYGAgMPD2QWBB4JT25LZXlEb3duBUByZXR1cm4gY2xpY2tCdXR0b24oZXZlbnQsJ0RydWdJbmZvUXVlcnlCb3hfYnRuUXVlcnlCeURydWdOYW1lJyk7HgdvbmZvY3VzBTFqYXZhc2NyaXB0OkRydWdJbmZvUXVlcnlCb3hfdHhiRHJ1Z05hbWUuc2VsZWN0KCk7ZAIFDxAPFggeDkRhdGFWYWx1ZUZpZWxkBQpWYWx1ZUZpZWxkHg1EYXRhVGV4dEZpZWxkBQlUZXh0RmllbGQeC18hRGF0YUJvdW5kZx8DaBYCHwQFQHJldHVybiBjbGlja0J1dHRvbihldmVudCwnRHJ1Z0luZm9RdWVyeUJveF9idG5RdWVyeUJ5RHJ1Z05hbWUnKTsQFQQJ6JmV5pa56ZuGCk1pY3JvTWVkZXgOQWNjZXNzTWVkaWNpbmUDQk5GFQQBMQEyATQBNhQrAwRnZ2dnFgFmZAIHDw9kFgIeB29uY2xpY2sFc3RoaXMuZGlzYWJsZWQ9dHJ1ZTt0aGlzLnZhbHVlPSfomZXnkIbkuK0uLi4nO19fZG9Qb3N0QmFjaygnRHJ1Z0luZm9RdWVyeUJveCRidG5RdWVyeUJ5RHJ1Z05hbWUnLCAnJyk7IHJldHVybiBmYWxzZTtkAgMPZBYEAgMPD2QWBB8EBUJyZXR1cm4gY2xpY2tCdXR0b24oZXZlbnQsJ0RydWdJbmZvUXVlcnlCb3hfYnRuUXVlcnlCeUluZGljYXRpb24nKTsfBQUzamF2YXNjcmlwdDpEcnVnSW5mb1F1ZXJ5Qm94X3R4YkluZGljYXRpb24uc2VsZWN0KCk7ZAIFDw9kFgIfCQV1dGhpcy5kaXNhYmxlZD10cnVlO3RoaXMudmFsdWU9J+iZleeQhuS4rS4uLic7X19kb1Bvc3RCYWNrKCdEcnVnSW5mb1F1ZXJ5Qm94JGJ0blF1ZXJ5QnlJbmRpY2F0aW9uJywgJycpOyByZXR1cm4gZmFsc2U7ZAIFDw8WAh8DaGRkAgcPZBYEAgMPEA9kFgIfBAVHcmV0dXJuIGNsaWNrQnV0dG9uKGV2ZW50LCdEcnVnSW5mb1F1ZXJ5Qm94X2J0blF1ZXJ5QnlQcmVnbmFuY3lGYWN0b3InKTtkZGQCBQ8PZBYCHwkFenRoaXMuZGlzYWJsZWQ9dHJ1ZTt0aGlzLnZhbHVlPSfomZXnkIbkuK0uLi4nO19fZG9Qb3N0QmFjaygnRHJ1Z0luZm9RdWVyeUJveCRidG5RdWVyeUJ5UHJlZ25hbmN5RmFjdG9yJywgJycpOyByZXR1cm4gZmFsc2U7ZAIJDw8WAh8CBWrku6UgPGZvbnQgY29sb3I9J2JsdWUnPuiXpeWQjTwvZm9udD4g5p+l6Kmi77yaPGI+TWV0Zm9ybWluPC9iPu+8jOWFsSA8Zm9udCBjb2xvcj0nYmx1ZSc+MjwvZm9udD4g562G6LOH5paZZGQCBw8PFgIfA2dkZAIDDw8WAh4jRHJ1Z0luZm9Db250cm9sL0RydWdMaXN0L0NvbHVtblR5cGULKwQAZBYEZg88KwARAwAPFgQfCGceC18hSXRlbUNvdW50AgJkARAWBmYCAQICAgMCBAIFFgY8KwAFAQIWBB4FV2lkdGgbAAAAAAAAOUAHAAAAHgRfIVNCAoACPCsABQECFgQfDBsAAAAAAAA0QAcAAAAfDQKAAjwrAAUBAhYEHwwbAAAAAAAAOUAHAAAAHw0CgAI8KwAFAQIWBB8MGwAAAAAAACRABwAAAB8NAoACPCsABQECFgQfDBsAAAAAAAAkQAcAAAAfDQKAAjwrAAUBAhYEHwwbAAAAAAAAJEAHAAAAHw0CgAIWBgIGAgYCBgIGAgYCBgwUKwAAFgJmD2QWBgIBD2QWDGYPZBYCAgEPDxYEHwIFDU1ldGZvcm1pbiBIQ2weD0NvbW1hbmRBcmd1bWVudAUIR0xVNExCMzJkZAIBD2QWAgIBDw8WAh8CBQzluqvpra/ljJbpjKBkZAICD2QWAgIBDw8WAh8CBRxHbHVjb3BoYWdlIFRhYmxldCA4NTAgbWcvdGFiZGQCAw9kFgICAQ8PFgIeC05hdmlnYXRlVXJsBTlodHRwczovL3JlZy5udHVoLmdvdi50dy9waGFyL1dlYkFwL0VkdWNhdGlvblBhcGVycy8xNC5wZGZkZAIED2QWAgIBDw8WBB8PZR8DaGRkAgUPZBYCAgEPDxYCHw8FPGh0dHBzOi8vcmVnLm50dWguZ292LnR3L3BoYXIvV2ViQXAvSW5zdHJ1Y3Rpb25zL0dMVTRMQjMyLnBkZmRkAgIPZBYMZg9kFgICAQ8PFgQfAgUNTWV0Zm9ybWluIEhDbB8OBQhMT0Q0TEI1N2RkAgEPZBYCAgEPDxYCHwIFD+S8j+ezluiGnOiho+mMoGRkAgIPZBYCAgEPDxYCHwIFHkxvZGl0b24gRi5DLiBUYWJsZXQgNTAwIG1nL3RhYmRkAgMPZBYCAgEPDxYCHw8FOWh0dHBzOi8vcmVnLm50dWguZ292LnR3L3BoYXIvV2ViQXAvRWR1Y2F0aW9uUGFwZXJzLzE0LnBkZmRkAgQPZBYCAgEPDxYEHw9lHwNoZGQCBQ9kFgICAQ8PFgIfDwU8aHR0cHM6Ly9yZWcubnR1aC5nb3YudHcvcGhhci9XZWJBcC9JbnN0cnVjdGlvbnMvTE9ENExCNTcucGRmZGQCAw8PFgIfA2hkZAICDw8WAh8DaGQWAgIBDw8WAh8CZWRkGAEFF0RydWdMaXN0Qm94JGdydkRydWdMaXN0DzwrAAwBCAIBZI5OINQi1zYk71YUpnPQGG4/huN2KOieW4ZZNzYqRPAs" />
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['form1'];
+if (!theForm) {
+    theForm = document.form1;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="/PharmacyOutside/WebResource.axd?d=r-nhRpvhDKmRbT-85bQ2PEhbJpJhsYpuXpgcKQX8AE7VLSjsxYUZQ2mbxKA-lFqrbnXLlxzHWokHy9LyGahwf7km01mUnrpnN6a-KbzKvjA1&amp;t=639137534245404145" type="text/javascript"></script>
+
+
+<script src="/PharmacyOutside/ScriptResource.axd?d=u83l4vXgC8H5cz32__DmK1zpkZnJlmIGk1ik-jiZ3r5eRzzJ2YKZOGej2zwt9nE6VKpN4-BqqYsq3PEuVEqVEvQVTVAkLs-5p5bgmYtsxs3pqhlsNTaUMpc0w_mvsdjtMLvwTljTv1TU1h5boEurgeD8NxiMGf-J6Y-FnGUVOOynFqAciZGiLaHUcAgybHwT0&amp;t=5c0e0825" type="text/javascript"></script>
+<script src="/PharmacyOutside/WebResource.axd?d=rQN2XA1hVwyPs54ChjNqbl1q38yu-vlD1w4x9WHUfcOsB6zHvu4i_nXXyZXdKZtUvgoU3MOZbBV4mHmnTKNjHxFR2whw4axXANL948IMge81&amp;t=639137534245404145" type="text/javascript"></script>
+<div>
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="63F40EE8" />
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAA+ZSygncXewmHeweob+qWT5aPBnzwHGr8nT4dH1uoCLxxrY4bxwipJTVh12S9/wT74d8LRGWENxduZWhCwqqCaCy0TOxxcdr1GV5DZYEOK/mtoaKtYz+aWdQnY4n5e26zI8DJU5Z7OZEC7dUfqhrbIR3P7eqyCib3CpyutIv5lFY5EfTT+XqSPX2Pwj4fOJkJxkL+B87iLJReQhohqAfeyqQmHQjwCi/6NYOsGkD307kCMAdUsKN2mPCtj1ZLnL49hxAD2AYt+aJETIaSP3752nhL6ma5YLyeAj8GGR3rCZD2YqWzHXmVOBE55ZATLETjzG0j/LmGFXtZzJeBXclzzgVrkkSI6wXRbBk6L6wLfLAg==" />
+</div>
+        
+        <div id="uplContent">
+	
+                <table border="0" cellpadding="0" cellspacing="2" width="100%">
+                    <tr>
+                        <td style="width: 100%; vertical-align: top;">
+                            <table width="100%">
+                                <tr>
+                                    <td style="vertical-align: top;">
+                                        
+<link rel="Stylesheet" type="text/css" href="/css/style.css" />
+
+
+
+<input type="hidden" name="DrugInfoQueryBox$hdfBtnLoadingText" id="DrugInfoQueryBox_hdfBtnLoadingText" value="處理中..." />
+
+<div id="DrugInfoQueryBox_pnlQuery">
+		
+    <table class="queryTableDisplay" width="100%" style="line-height:1.8em;">
+        <div id="DrugInfoQueryBox_pnlQueryByDrugName">
+			
+            <tr>
+                <td class="queryText">
+                    <div style="vertical-align:bottom;">
+                        <label for="DrugInfoQueryBox_txbDrugName" id="DrugInfoQueryBox_lblQueryByDrugNameTitle">藥名查詢：</label>
+                        <input name="DrugInfoQueryBox$txbDrugName" type="text" value="Metformin" maxlength="30" id="DrugInfoQueryBox_txbDrugName" class="inputTxb2" OnKeyDown="return clickButton(event,&#39;DrugInfoQueryBox_btnQueryByDrugName&#39;);" onfocus="javascript:DrugInfoQueryBox_txbDrugName.select();" />
+                        
+                        <input type="submit" name="DrugInfoQueryBox$btnQueryByDrugName" value="查詢" onclick="this.disabled=true;this.value=&#39;處理中...&#39;;__doPostBack(&#39;DrugInfoQueryBox$btnQueryByDrugName&#39;, &#39;&#39;); return false;" id="DrugInfoQueryBox_btnQueryByDrugName" class="button" style="width:60px;" />
+                    </div>
+                </td>
+            </tr>
+        
+		</div>
+        <div id="DrugInfoQueryBox_pnlQueryByIndication">
+			
+            <tr>
+                <td class="queryText">
+                    <div style="vertical-align:bottom;">
+                        <label for="DrugInfoQueryBox_txbIndication" id="DrugInfoQueryBox_lblQueryByIndicationTitle">關鍵字查詢：</label>
+                        <input name="DrugInfoQueryBox$txbIndication" type="text" maxlength="30" id="DrugInfoQueryBox_txbIndication" class="inputTxb2" OnKeyDown="return clickButton(event,&#39;DrugInfoQueryBox_btnQueryByIndication&#39;);" onfocus="javascript:DrugInfoQueryBox_txbIndication.select();" />
+                        <input type="submit" name="DrugInfoQueryBox$btnQueryByIndication" value="查詢" onclick="this.disabled=true;this.value=&#39;處理中...&#39;;__doPostBack(&#39;DrugInfoQueryBox$btnQueryByIndication&#39;, &#39;&#39;); return false;" id="DrugInfoQueryBox_btnQueryByIndication" class="button" style="width:60px;" />
+                    </div>
+                </td>
+            </tr>
+        
+		</div>
+        
+        <div id="DrugInfoQueryBox_pnlQueryByPregnancyFactor">
+			
+            <tr>
+                <td class="queryText">
+                    <div style="vertical-align:top;">
+                        <label for="DrugInfoQueryBox_ddlPregnancyFactor" id="DrugInfoQueryBox_lblQueryByPregnancyFactorTitle">懷孕分級查詢：</label>
+                        <select name="DrugInfoQueryBox$ddlPregnancyFactor" id="DrugInfoQueryBox_ddlPregnancyFactor" class="ddl" OnKeyDown="return clickButton(event,&#39;DrugInfoQueryBox_btnQueryByPregnancyFactor&#39;);">
+				<option value="A">A</option>
+				<option value="B">B</option>
+				<option value="C">C</option>
+				<option value="D">D</option>
+				<option value="X">X</option>
+
+			</select>
+                        <input type="submit" name="DrugInfoQueryBox$btnQueryByPregnancyFactor" value="查詢" onclick="this.disabled=true;this.value=&#39;處理中...&#39;;__doPostBack(&#39;DrugInfoQueryBox$btnQueryByPregnancyFactor&#39;, &#39;&#39;); return false;" id="DrugInfoQueryBox_btnQueryByPregnancyFactor" class="button" style="width:60px;" />
+                    </div>
+                </td>
+            </tr>
+        
+		</div>
+    </table>
+    <span id="DrugInfoQueryBox_lblQryInput" class="lblText" style="font-family:Arial;">以 <font color='blue'>藥名</font> 查詢：<b>Metformin</b>，共 <font color='blue'>2</font> 筆資料</span>
+
+    
+    
+    
+    
+    
+    
+    
+
+    <input type="hidden" name="DrugInfoQueryBox$hdfPharmacologyId" id="DrugInfoQueryBox_hdfPharmacologyId" />
+
+	</div>
+
+<span id="DrugInfoQueryBox_lblNote" style="color:DarkTurquoise;font-weight:bold;"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="vertical-align: top;">
+                                        <div>
+		<table cellspacing="1" rules="all" border="0" id="DrugListBox_grvDrugList" style="background-color:#999999;border-width:0px;border-style:Solid;width:100%;">
+			<tr style="color:#666666;background-color:#BFBFBF;font-weight:normal;">
+				<th scope="col" style="width:25%;">學名</th><th scope="col" style="width:20%;">中文名</th><th scope="col" style="width:25%;">商品名</th><th scope="col" style="width:10%;">用藥<br>教育</th><th scope="col" style="width:10%;">糖漿<br>泡製</th><th scope="col" style="width:10%;">仿單</th>
+			</tr><tr class="tableCell" style="background-color:White;">
+				<td align="left">
+                <a id="DrugListBox_grvDrugList_ctl02_btnGenericName" href="javascript:__doPostBack(&#39;DrugListBox$grvDrugList$ctl02$btnGenericName&#39;,&#39;&#39;)">Metformin HCl</a>
+            </td><td align="left">
+                <span id="DrugListBox_grvDrugList_ctl02_lblApplyAmount">庫魯化錠</span>
+            </td><td align="left">
+                <span id="DrugListBox_grvDrugList_ctl02_lblPackUnit">Glucophage Tablet 850 mg/tab</span>
+            </td><td align="center">
+                <a id="DrugListBox_grvDrugList_ctl02_lnkEDU" href="https://reg.ntuh.gov.tw/phar/WebAp/EducationPapers/14.pdf" target="_blank" style="display:inline-block;height:16px;width:16px;"><img src="pic/document.gif" alt="" style="border-width:0px;" /></a>
+            </td><td align="center">
+                
+            </td><td align="center">
+                <a id="DrugListBox_grvDrugList_ctl02_lnkInstructions" href="https://reg.ntuh.gov.tw/phar/WebAp/Instructions/GLU4LB32.pdf" target="_blank" style="display:inline-block;height:16px;width:16px;"><img src="pic/document.gif" alt="" style="border-width:0px;" /></a>
+            </td>
+			</tr><tr class="tableCell2" style="background-color:#EFEFEF;">
+				<td align="left">
+                <a id="DrugListBox_grvDrugList_ctl03_btnGenericName" href="javascript:__doPostBack(&#39;DrugListBox$grvDrugList$ctl03$btnGenericName&#39;,&#39;&#39;)">Metformin HCl</a>
+            </td><td align="left">
+                <span id="DrugListBox_grvDrugList_ctl03_lblApplyAmount">伏糖膜衣錠</span>
+            </td><td align="left">
+                <span id="DrugListBox_grvDrugList_ctl03_lblPackUnit">Loditon F.C. Tablet 500 mg/tab</span>
+            </td><td align="center">
+                <a id="DrugListBox_grvDrugList_ctl03_lnkEDU" href="https://reg.ntuh.gov.tw/phar/WebAp/EducationPapers/14.pdf" target="_blank" style="display:inline-block;height:16px;width:16px;"><img src="pic/document.gif" alt="" style="border-width:0px;" /></a>
+            </td><td align="center">
+                
+            </td><td align="center">
+                <a id="DrugListBox_grvDrugList_ctl03_lnkInstructions" href="https://reg.ntuh.gov.tw/phar/WebAp/Instructions/LOD4LB57.pdf" target="_blank" style="display:inline-block;height:16px;width:16px;"><img src="pic/document.gif" alt="" style="border-width:0px;" /></a>
+            </td>
+			</tr>
+		</table>
+	</div>
+
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            
+</div>
+    
+
+<script type="text/javascript">
+//<![CDATA[
+WebForm_AutoFocus('DrugInfoQueryBox_txbDrugName');//]]>
+</script>
+</form>
+</body>
+</html>

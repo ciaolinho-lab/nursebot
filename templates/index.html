@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-TW" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網站護理智慧助手 — 護理 SOP • 藥物指引 • 臨床實證平台</title>
+    <meta name="description" content="網站護理智慧助手，整合 Gemini 護理 AI 助手、台大醫院藥劑部、Cochrane Library 實證醫學指引與照護線上衛教單張。">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <!-- 頂部導覽列 Header -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-user-nurse"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">網站護理智慧助手 <span class="badge-web">Web 平台</span></span>
+                    <span class="brand-sub">NurseBot 臨床照護決策系統</span>
+                </div>
+            </div>
+
+            <div class="status-indicator">
+                <span class="pulse-dot"></span>
+                <span class="status-text">全庫資料庫即時連線</span>
+            </div>
+
+            <div class="header-actions">
+                <button id="btn-favorites" class="btn-icon" title="我的收藏">
+                    <i class="fa-solid fa-bookmark"></i>
+                    <span id="fav-count" class="badge-count">0</span>
+                </button>
+                <button id="btn-theme-toggle" class="btn-icon" title="切換深淺模式">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 頁面主要內容區域 -->
+    <main class="main-content">
+        <!-- Hero Search 區塊 -->
+        <section class="hero-section">
+            <div class="hero-bg" style="background-image: url('/static/images/hero_banner.jpg');">
+                <div class="hero-overlay"></div>
+            </div>
+
+            <div class="hero-container">
+                <h1 class="hero-title">網站護理智慧助手</h1>
+                <p class="hero-subtitle">
+                    整合 <span class="highlight-gemini">Gemini 護理 AI</span>、
+                    <span class="highlight-ntuh">台大醫院藥劑部</span>、
+                    <span class="highlight-cochrane">Cochrane 實證醫學</span> 與 
+                    <span class="highlight-care">照護線上</span> 四大專業醫療資料庫
+                </p>
+
+                <!-- 搜尋列 Search Bar -->
+                <div class="search-box">
+                    <div class="search-input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input 
+                            type="text" 
+                            id="search-input" 
+                            placeholder="輸入關鍵字 (如：導尿管、Metformin、糖尿病、傷口照護、CPR)..." 
+                            autocomplete="off" 
+                            aria-label="搜尋關鍵字"
+                        />
+                        <button id="btn-clear" class="btn-clear hidden" title="清除內容">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <button id="btn-search" class="btn-search">
+                            <span>查詢</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+
+                    <!-- 搜尋熱門標籤 Hot Keywords -->
+                    <div class="search-tags">
+                        <span class="tags-label"><i class="fa-solid fa-fire"></i> 熱門查詢：</span>
+                        <div class="tags-wrapper">
+                            <button class="tag-btn" data-query="導尿管">🩺 導尿管</button>
+                            <button class="tag-btn" data-query="靜脈注射">🩺 靜脈注射</button>
+                            <button class="tag-btn" data-query="Metformin">💊 Metformin</button>
+                            <button class="tag-btn" data-query="Aspirin">💊 阿斯匹靈</button>
+                            <button class="tag-btn" data-query="糖尿病">📋 糖尿病</button>
+                            <button class="tag-btn" data-query="心肌梗塞">📋 心肌梗塞</button>
+                            <button class="tag-btn" data-query="傷口照護">📄 傷口照護</button>
+                            <button class="tag-btn" data-query="CPR">🩺 CPR 救急</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 分類切換頁籤 Filter Tabs -->
+        <section class="filter-section">
+            <div class="container">
+                <div class="tabs-container">
+                    <button class="tab-btn active" data-category="all">
+                        <i class="fa-solid fa-border-all"></i> 全庫智慧檢索
+                    </button>
+                    <button class="tab-btn" data-category="nursing_skill">
+                        <i class="fa-solid fa-stethoscope"></i> 護理技術 SOP
+                    </button>
+                    <button class="tab-btn" data-category="drug">
+                        <i class="fa-solid fa-pills"></i> 台大藥品查詢
+                    </button>
+                    <button class="tab-btn" data-category="disease">
+                        <i class="fa-solid fa-file-medical"></i> Cochrane 實證指引
+                    </button>
+                    <button class="tab-btn" data-category="education">
+                        <i class="fa-solid fa-book-medical"></i> 照護線上衛教
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 查詢結果區域 Results Section -->
+        <section class="results-section container">
+            <!-- 載入中狀態 Loader -->
+            <div id="loading-state" class="state-box hidden">
+                <div class="spinner"></div>
+                <p>正在檢索四大醫療資料庫，請稍候...</p>
+            </div>
+
+            <!-- 無搜尋結果/預設歡迎區塊 -->
+            <div id="welcome-state" class="state-box">
+                <div class="welcome-icon">
+                    <i class="fa-solid fa-notes-medical"></i>
+                </div>
+                <h3>歡迎使用 網站護理智慧助手</h3>
+                <p>請在上方輸入框輸入任何護理技術、藥品學名、臨床疾病或衛教主題進行查詢。</p>
+            </div>
+
+            <!-- 查無結果 Empty State -->
+            <div id="empty-state" class="state-box hidden">
+                <div class="empty-icon">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                </div>
+                <h3>查無相關資料</h3>
+                <p>建議嘗試其他關鍵字，如「靜脈注射」、「胰島素」、「高血壓」、「換藥」。</p>
+            </div>
+
+            <!-- 結果容器 Results Container -->
+            <div id="results-container" class="results-grid hidden">
+                <!-- 內容由 JS 動態渲染 -->
+            </div>
+        </section>
+    </main>
+
+    <!-- 頁腳 Footer -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <p>© 2026 網站護理智慧助手 | 專為護理專業人員打造</p>
+            <p class="footer-disclaimer">聲明：本網站整合之醫學資訊僅供臨床與教學輔助參考，實際處置應依各醫療院所最新 SOP 與醫師醫囑為準。</p>
+        </div>
+    </footer>
+
+    <!-- 護理 SOP 完整步驟 Modal 對話盒 -->
+    <div id="sop-modal" class="modal-backdrop hidden">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-badge"><i class="fa-solid fa-stethoscope"></i> 護理技術 SOP</span>
+                    <h2 id="modal-title">技術名稱</h2>
+                </div>
+                <button id="modal-close" class="modal-close-btn" aria-label="關閉對話盒">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- 注意事項 Warning Callout -->
+                <div id="modal-warnings" class="warning-callout hidden">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <div id="modal-warnings-list"></div>
+                </div>
+
+                <!-- 步驟 Checkable Checklist -->
+                <div class="sop-checklist-section">
+                    <h3><i class="fa-solid fa-list-check"></i> 臨床操作步驟 CheckList (點擊可勾選完成)：</h3>
+                    <div id="modal-steps-container" class="steps-checklist"></div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button id="btn-copy-sop" class="btn-secondary">
+                    <i class="fa-solid fa-copy"></i> 複製 SOP 文字
+                </button>
+                <button id="btn-print-sop" class="btn-secondary">
+                    <i class="fa-solid fa-print"></i> 列印 / 匯出 PDF
+                </button>
+                <button id="btn-save-fav-sop" class="btn-primary">
+                    <i class="fa-solid fa-bookmark"></i> 加入我的收藏
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 我的收藏 Modal -->
+    <div id="fav-modal" class="modal-backdrop hidden">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-bookmark"></i> 我的臨床收藏清單</h2>
+                <button id="fav-modal-close" class="modal-close-btn" aria-label="關閉">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="fav-list-container" class="fav-list">
+                    <!-- 由 JS 渲染 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-clear-favs" class="btn-danger">
+                    <i class="fa-solid fa-trash"></i> 清空收藏
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

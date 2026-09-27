@@ -1,0 +1,22 @@
+# Render.com 部署設定
+services:
+  - type: web
+    name: nursebot
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: LINE_CHANNEL_SECRET
+        sync: false
+      - key: LINE_CHANNEL_ACCESS_TOKEN
+        sync: false
+      - key: USE_MOCK_DATA
+        value: "true"
+      - key: EBSCO_PROFILE_ID
+        sync: false
+      - key: EBSCO_USER_ID
+        sync: false
+      - key: EBSCO_PASSWORD
+        sync: false
+      - key: PYTHON_VERSION
+        value: "3.11.9"
