@@ -825,3 +825,124 @@ body {
     .nav-container { flex-wrap: wrap; gap: 0.5rem; }
     .status-indicator { display: none; }
 }
+
+/* --------------------------------------------------------------------------
+   11. 即時關鍵字建議、Toast 通知與回到頂部按鈕
+   -------------------------------------------------------------------------- */
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 0.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 15px 35px var(--shadow-color);
+    z-index: 99;
+    overflow: hidden;
+    backdrop-filter: blur(16px);
+}
+
+.suggestion-item {
+    padding: 0.75rem 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.2s ease;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover, .suggestion-item.active {
+    background: var(--primary-nursing-glow);
+    color: var(--primary-nursing);
+}
+
+.suggestion-tag {
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    color: var(--text-secondary);
+}
+
+/* Toast 通知容器 */
+.toast-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    pointer-events: none;
+}
+
+.toast {
+    pointer-events: auto;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--primary-nursing);
+    padding: 0.9rem 1.4rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px var(--shadow-color);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    animation: toastIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.toast.toast-error {
+    border-left-color: var(--primary-disease);
+}
+
+.toast.toast-info {
+    border-left-color: var(--primary-education);
+}
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes toastOut {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(20px) scale(0.9); }
+}
+
+/* 回到頂部按鈕 */
+.btn-back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-nursing), #00a884);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    box-shadow: 0 6px 20px var(--primary-nursing-glow);
+    z-index: 990;
+    transition: all 0.3s ease;
+}
+
+.btn-back-to-top:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 10px 25px var(--primary-nursing-glow);
+}
+

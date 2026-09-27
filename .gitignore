@@ -11,4 +11,6 @@ venv/
 dist/
 build/
 .pytest_cache/
+tunnel_url.txt
+
 

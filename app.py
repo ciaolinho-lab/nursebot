@@ -84,9 +84,10 @@ class SmartNurseDataProvider:
         self.cochrane = CochraneClient()
         self.gemini = GeminiClient()
         self._cache = {}
-        self._cache_ttl = 600  # 10 分鐘快取
+        self._cache_ttl = 1800  # 30 分鐘快取
 
     def _get_cache(self, key: str):
+        key = key.strip().lower()
         if key in self._cache:
             data, timestamp = self._cache[key]
             if time.time() - timestamp < self._cache_ttl:
@@ -95,6 +96,7 @@ class SmartNurseDataProvider:
         return None
 
     def _set_cache(self, key: str, data):
+        key = key.strip().lower()
         self._cache[key] = (data, time.time())
 
     def search_drug(self, keyword: str) -> list:
@@ -206,18 +208,37 @@ data_provider = SmartNurseDataProvider(raw_provider)
 flex_builder = FlexBuilder()
 
 
+def _prewarm_cache():
+    """伺服器啟動時背景預熱熱門關鍵字快取"""
+    hot_keywords = ["導尿管", "靜脈注射", "Metformin", "阿斯匹靈", "Aspirin", "糖尿病", "心肌梗塞", "傷口照護", "CPR"]
+    logger.info("⚡ 開始預熱熱門關鍵字快取...")
+    for kw in hot_keywords:
+        try:
+            data_provider.search_all(kw)
+        except Exception as e:
+            logger.warning(f"預熱「{kw}」例外: {e}")
+    logger.info("✅ 快取預熱完成！")
+
+
+import threading
+threading.Thread(target=_prewarm_cache, daemon=True).start()
+
+
 # ---------------------------------------------------------------------------
 # 路由
 # ---------------------------------------------------------------------------
 @app.route("/", methods=["GET"])
 def index():
     """護理智慧查詢網 首頁 SPA"""
+    if os.path.exists("index.html"):
+        with open("index.html", "r", encoding="utf-8") as f:
+            return f.read()
     return render_template("index.html")
 
 
 @app.route("/api/search", methods=["GET"])
 def api_search():
-    """Web 智慧搜尋 API"""
+    """Web 智慧搜尋 API (具備自動智慧回退機制)"""
     keyword = request.args.get("q", "").strip()
     category = request.args.get("category", "all").strip()
 
@@ -229,13 +250,17 @@ def api_search():
     if category == "all" or not category:
         results = data_provider.search_all(keyword)
     elif category == "nursing_skill":
-        results = {"nursing_skill": data_provider.search_nursing_skill(keyword)}
+        res = data_provider.search_nursing_skill(keyword)
+        results = {"nursing_skill": res} if res else data_provider.search_all(keyword)
     elif category == "drug":
-        results = {"drug": data_provider.search_drug(keyword)}
+        res = data_provider.search_drug(keyword)
+        results = {"drug": res} if res else data_provider.search_all(keyword)
     elif category == "disease":
-        results = {"disease": data_provider.search_disease(keyword)}
+        res = data_provider.search_disease(keyword)
+        results = {"disease": res} if res else data_provider.search_all(keyword)
     elif category == "education":
-        results = {"education": data_provider.search_education(keyword)}
+        res = data_provider.search_education(keyword)
+        results = {"education": res} if res else data_provider.search_all(keyword)
     else:
         results = data_provider.search_all(keyword)
 

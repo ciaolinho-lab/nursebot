@@ -17,15 +17,16 @@ CAREONLINE_BASE_URL = "https://www.careonline.com.tw/"
 class CareOnlineClient:
     """照護線上衛教資料庫 API / Web Scraper"""
 
-    def __init__(self, timeout: int = 3):
+    def __init__(self, timeout: int = 2.5):
         self.timeout = timeout
-        self.headers = {
+        self.session = requests.Session()
+        self.session.headers.update({
             "User-Agent": (
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
                 "Chrome/115.0.0.0 Safari/537.36"
             )
-        }
+        })
 
     def search_education(self, keyword: str) -> list:
         """根據關鍵字搜尋照護線上衛教文章"""
@@ -38,7 +39,7 @@ class CareOnlineClient:
 
         try:
             logger.info(f"🌐 向 照護線上 查詢衛教單張: {keyword}")
-            resp = requests.get(search_url, headers=self.headers, timeout=self.timeout)
+            resp = self.session.get(search_url, timeout=self.timeout)
             resp.encoding = "utf-8"
             if resp.status_code != 200:
                 logger.warning(f"CareOnline HTTP {resp.status_code}")

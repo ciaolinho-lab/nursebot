@@ -14,6 +14,7 @@ https://www.ntuh.gov.tw/phr/Fpage.action?muid=2077&fid=1939
 """
 
 import re
+import time
 import logging
 import urllib3
 import requests
@@ -28,13 +29,48 @@ NTUH_HOME_URL = "https://www.ntuh.gov.tw/phr/Fpage.action?muid=2077&fid=1939"
 
 
 class NTUHClient:
-    """台大醫院藥劑部藥品查詢客戶端"""
+    """台大醫院藥劑部藥品查詢客戶端 (優化快取與連線效能)"""
 
     def __init__(self):
-        self.session = requests.Session()
-        self.session.headers.update({
+        self._vs_cache = None  # (viewstate, generator, validation, timestamp)
+        self._vs_ttl = 900     # 15 分鐘快取 ViewState
+
+    def _get_session(self):
+        s = requests.Session()
+        s.headers.update({
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         })
+        return s
+
+    def _get_viewstate(self, force_refresh: bool = False):
+        """取得或快取 ASP.NET ViewState 參數 (省去重複 GET 耗時)"""
+        now = time.time()
+        if not force_refresh and self._vs_cache:
+            vs, gen, val, ts = self._vs_cache
+            if now - ts < self._vs_ttl:
+                return vs, gen, val
+
+        try:
+            session = self._get_session()
+            resp = session.get(NTUH_QUERY_URL, verify=False, timeout=2.0)
+            vs_m = re.search(r'id="__VIEWSTATE"\s+value="([^"]+)"', resp.text)
+            gen_m = re.search(r'id="__VIEWSTATEGENERATOR"\s+value="([^"]+)"', resp.text)
+            val_m = re.search(r'id="__EVENTVALIDATION"\s+value="([^"]+)"', resp.text)
+
+            if not vs_m:
+                logger.warning("無法取得 NTUH ViewState")
+                return None, None, None
+
+            vs = vs_m.group(1)
+            gen = gen_m.group(1) if gen_m else ""
+            val = val_m.group(1) if val_m else ""
+
+            self._vs_cache = (vs, gen, val, now)
+            return vs, gen, val
+
+        except Exception as e:
+            logger.warning(f"取得 NTUH ViewState 失敗: {e}")
+            return None, None, None
 
     def search_drug(self, keyword: str) -> List[Dict]:
         """
@@ -51,21 +87,12 @@ class NTUHClient:
             keyword = "Metformin"
 
         try:
-            # 1. 取得 ViewState
-            resp = self.session.get(NTUH_QUERY_URL, verify=False, timeout=3)
-            vs_m = re.search(r'id="__VIEWSTATE"\s+value="([^"]+)"', resp.text)
-            gen_m = re.search(r'id="__VIEWSTATEGENERATOR"\s+value="([^"]+)"', resp.text)
-            val_m = re.search(r'id="__EVENTVALIDATION"\s+value="([^"]+)"', resp.text)
+            viewstate, generator, validation = self._get_viewstate()
 
-            if not vs_m:
-                logger.warning("無法取得 NTUH ViewState")
+            if not viewstate:
                 return []
 
-            viewstate = vs_m.group(1)
-            generator = gen_m.group(1) if gen_m else ""
-            validation = val_m.group(1) if val_m else ""
-
-            # 2. 以「藥名查詢」發送 POST
+            session = self._get_session()
             payload_name = {
                 "__VIEWSTATE": viewstate,
                 "__VIEWSTATEGENERATOR": generator,
@@ -73,10 +100,18 @@ class NTUHClient:
                 "DrugInfoQueryBox$txbDrugName": keyword,
                 "DrugInfoQueryBox$btnQueryByDrugName": "查詢",
             }
-            post_resp = self.session.post(NTUH_QUERY_URL, data=payload_name, verify=False, timeout=4)
+            post_resp = session.post(NTUH_QUERY_URL, data=payload_name, verify=False, timeout=2.5)
             results = self._parse_html(post_resp.text)
 
-            # 3. 若藥名查詢無結果，試試關鍵字/適應症查詢
+            if not results and post_resp.status_code == 200 and "grvDrugList" not in post_resp.text:
+                viewstate, generator, validation = self._get_viewstate(force_refresh=True)
+                if viewstate:
+                    payload_name["__VIEWSTATE"] = viewstate
+                    payload_name["__VIEWSTATEGENERATOR"] = generator
+                    payload_name["__EVENTVALIDATION"] = validation
+                    post_resp = session.post(NTUH_QUERY_URL, data=payload_name, verify=False, timeout=2.5)
+                    results = self._parse_html(post_resp.text)
+
             if not results:
                 payload_ind = {
                     "__VIEWSTATE": viewstate,
@@ -85,14 +120,14 @@ class NTUHClient:
                     "DrugInfoQueryBox$txbIndication": keyword,
                     "DrugInfoQueryBox$btnQueryByIndication": "查詢",
                 }
-                post_resp2 = self.session.post(NTUH_QUERY_URL, data=payload_ind, verify=False, timeout=4)
+                post_resp2 = session.post(NTUH_QUERY_URL, data=payload_ind, verify=False, timeout=2.5)
                 results = self._parse_html(post_resp2.text)
 
             logger.info(f"NTUH 藥劑部搜尋「{keyword}」找到 {len(results)} 筆結果")
             return results
 
         except Exception as e:
-            logger.error(f"NTUH 藥劑部查詢錯誤: {e}", exc_info=True)
+            logger.error(f"NTUH 藥劑部查詢錯誤: {e}")
             return []
 
     def _parse_html(self, html: str) -> List[Dict]:

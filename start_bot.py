@@ -57,6 +57,8 @@ def main():
         match = re.search(r"https://[a-zA-Z0-9-]+\.trycloudflare\.com", line)
         if match:
             public_url = match.group(0)
+            with open("tunnel_url.txt", "w", encoding="utf-8") as f:
+                f.write(public_url)
             break
 
     log("\n" + "★" * 60)
